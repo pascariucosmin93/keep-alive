@@ -11,6 +11,7 @@ The project is designed for homelab or small HA router setups where:
 ## Layout
 
 - `install.sh` installs the toolkit files into standard system paths
+- `scripts/install-keepalived.sh` installs `keepalived` and `iptables-persistent`
 - `scripts/backup-iptables.sh` creates a timestamped backup of current rules
 - `scripts/apply-nat-mappings.sh` applies a clean NAT configuration from a mapping file
 - `scripts/set-iptables-vip.sh` applies VIP-to-backend mappings and persists them
@@ -40,6 +41,15 @@ sudo ./scripts/show-ha-status.sh
 
 ## Installation
 
+Install the operating system packages:
+
+```bash
+chmod +x scripts/*.sh
+sudo ./scripts/install-keepalived.sh
+```
+
+Install the toolkit files:
+
 ```bash
 chmod +x install.sh scripts/*.sh
 sudo ./install.sh
@@ -50,6 +60,13 @@ The installer copies:
 - scripts to `/usr/local/sbin`
 - example mapping file to `/etc/keepalived/nat-mappings.conf.example`
 - example keepalived config to `/etc/keepalived/keepalived.conf.example`
+
+Enable and start keepalived:
+
+```bash
+sudo systemctl enable --now keepalived
+sudo systemctl status keepalived --no-pager -l
+```
 
 ## Keepalived hook example
 
