@@ -10,8 +10,10 @@ The project is designed for homelab or small HA router setups where:
 
 ## Layout
 
+- `install.sh` installs the toolkit files into standard system paths
 - `scripts/backup-iptables.sh` creates a timestamped backup of current rules
 - `scripts/apply-nat-mappings.sh` applies a clean NAT configuration from a mapping file
+- `scripts/set-iptables-vip.sh` applies VIP-to-backend mappings and persists them
 - `scripts/set-keepalived-role.sh` updates `state` and `priority` in `keepalived.conf`
 - `scripts/show-ha-status.sh` prints VIP, keepalived and NAT state
 - `examples/nat-mappings.conf.example` shows the mapping format without exposing real IPs
@@ -29,18 +31,32 @@ The project is designed for homelab or small HA router setups where:
 
 ```bash
 chmod +x scripts/*.sh
+sudo ./install.sh
 sudo ./scripts/backup-iptables.sh
-sudo ./scripts/apply-nat-mappings.sh ./examples/nat-mappings.conf.example
+sudo ./scripts/set-iptables-vip.sh ./examples/nat-mappings.conf.example
 sudo ./scripts/set-keepalived-role.sh /etc/keepalived/keepalived.conf MASTER 110
 sudo ./scripts/show-ha-status.sh
 ```
 
+## Installation
+
+```bash
+chmod +x install.sh scripts/*.sh
+sudo ./install.sh
+```
+
+The installer copies:
+
+- scripts to `/usr/local/sbin`
+- example mapping file to `/etc/keepalived/nat-mappings.conf.example`
+- example keepalived config to `/etc/keepalived/keepalived.conf.example`
+
 ## Keepalived hook example
 
 ```bash
-notify_master "/usr/local/sbin/apply-nat-mappings.sh /etc/keepalived/nat-mappings.conf"
-notify_backup "/usr/local/sbin/apply-nat-mappings.sh /etc/keepalived/nat-mappings.conf"
-notify_fault  "/usr/local/sbin/apply-nat-mappings.sh /etc/keepalived/nat-mappings.conf"
+notify_master "/usr/local/sbin/set-iptables-vip.sh /etc/keepalived/nat-mappings.conf"
+notify_backup "/usr/local/sbin/set-iptables-vip.sh /etc/keepalived/nat-mappings.conf"
+notify_fault  "/usr/local/sbin/set-iptables-vip.sh /etc/keepalived/nat-mappings.conf"
 ```
 
 ## Mapping model
